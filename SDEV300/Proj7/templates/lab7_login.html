@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--- calls css file and sets title--->
+    <title>User Login</title>
+    <link rel="stylesheet" href="/static/lab7_format.css">
+  </head>
+  <!--- body of page including h, p, styles, and links --->
+  <body>
+    <a href="lab7_web.html" style="display:inline-block">MAIN </a>
+    <a href="lab7_register.html" style="display:inline-block">REGISTER</a>
+    <div style="text-align:center">
+      <h1>Please login</h1><br>
+      <form action="/lab7_login.html" method="post">
+        <label>Username:</label>
+          <input type="text" placeholder="Username" name="user_name" id="user_name"><br>
+        <label>Password:</label>
+          <input type="password" placeholder="Password" name="password" id="password"><br>
+        <input type="submit" value="Login">
+        <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+      </form>
+        {% if error is defined and error != None %}
+            <span style="color:red;font-size:10pt;">Error: {{ error }}</span>
+        {% endif %}
+    </div>
+  </body>
+</html>

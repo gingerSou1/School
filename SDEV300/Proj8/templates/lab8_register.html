@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/lab8_format.css">
+    <title>User Registration</title>
+</head>
+<body>
+    <div style="text-align:center">
+      <h1>Please Register User</h1><br>
+      <form action="" method="post">
+          <label>Enter First Name:</label>
+          <input type="text" placeholder="First Name" name="first_name" id="first_name"><br>
+          <label>Enter Last Name:</label>
+          <input type="text" placeholder="Last Name" name="last_name" id="last_name"><br>
+          <label>Enter Username:</label>
+          <input type="text" placeholder="Username" name="user_name" id="user_name"><br>
+          <label>Enter Email Address:</label>
+          <input type="email" placeholder="Email" name="user_email" id="user_email"><br>
+          <label>Enter Password:</label>
+          <input type="password" placeholder="Password" name="password" id="password"><br>
+          <label>Re-enter Password:</label>
+          <input type="password" placeholder="Repeat Password" name="repass" id="repass"><br>
+
+          <input type="submit" value="Submit" onclick="lab8_login.html">
+          <button onclick="window.history.go(-1); return false">Cancel</button>
+      </form>
+        {% if error_msg is defined and error_msg != None %}
+            <span style="color:red;font-size:10pt;">Error: {{ error_msg }}</span>
+        {% endif %}
+        <img src="/static/img4.jpg" alt="dog">
+    </div>
+        {% extends "layout.html" %}
+</body>
+</html>

@@ -1,0 +1,230 @@
+"""
+_filename: "glover_lab_3.py
+_course name: "SDEV300 6382"
+_author: "Corey Glover"
+_copyright: "None"
+_credits: ["Corey Glover"]
+_license: "GPL"
+_version: "1.0.0"
+_maintainer: "Corey Glover"
+_email: "corey.j.glover@student.umgc.edu"
+_description: "This program shows an instance
+    of exception with an error handle."
+"""
+import string
+import sys
+import requests
+from PIL import Image
+from matplotlib import pyplot as plt
+import pandas as pd
+
+
+# gets file to create data used for program
+LOAD_FILE = r'C:\Users\Corey\Documents\FlowerImageMap-Copy.xlsx'
+data_file = pd.read_excel(open(LOAD_FILE, 'rb'),
+                          sheet_name='Sheet1')
+datafile_to_dict = data_file.to_dict()
+state_dict = {}
+for a_index in datafile_to_dict['STATE']:
+    state_dict[datafile_to_dict['STATE'][a_index]] = {}
+    state_dict[datafile_to_dict['STATE'][a_index]]['Capital'] = datafile_to_dict['CAPITAL'][a_index]
+    state_dict[datafile_to_dict['STATE'][a_index]]['State'] = datafile_to_dict['STATE'][a_index]
+    state_dict[datafile_to_dict['STATE'][a_index]]['Flower'] = datafile_to_dict['FLOWER'][a_index]
+    state_dict[datafile_to_dict['STATE'][a_index]]['Population'] = datafile_to_dict['POPULATION'][a_index]
+    state_dict[datafile_to_dict['STATE'][a_index]]['URL'] = datafile_to_dict['URL'][a_index]
+
+
+def main():
+    """
+    main program function
+    :return:
+    """
+    user_menu()
+
+
+# function to display menu for user choices
+def user_menu():
+    """
+    Displays user menu and allows user to enter their choice.
+    :param: choice
+    :return: None
+    """
+    while True:
+        # print menu
+        print("***************MENU************")
+        print("""
+        1: Alphabetize states
+        2: Search for State
+        3: Display State Population Bar Graph
+        4: Update State Population
+        0: Exit
+        """)
+        print("*******************************")
+        # handle user choice of menu items
+        choice = input("Please select an item: ")
+        if choice == '1':
+            order_states()
+        elif choice == '2':
+            search_states()
+        elif choice == '3':
+            population_graph()
+        elif choice == '4':
+            update_population()
+        elif choice == '0':
+            print("Thank you for using the application.")
+            sys.exit()
+        else:
+            print("That is not a valid selection.")
+
+
+# function that prints states ordered
+def order_states():
+    """
+    function to order states in alphabetical order
+    :param: state, state_info
+    :except: None
+    :return: None
+    """
+    for state in sorted(datafile_to_dict['STATE']):
+        print(f'-{datafile_to_dict["STATE"][state]}'
+              f'\n\tCapital: {datafile_to_dict["CAPITAL"][state]}'
+              f'\n\tFlower: {datafile_to_dict["FLOWER"][state]}'
+              f'\n\tPopulation: {datafile_to_dict["POPULATION"][state]}')
+
+
+# function that asks user to input state to get
+def get_state():
+    """
+    function to get the state the user wants to search for
+    :param: state
+    :except: If user enters something other than one in list
+    :return: None
+    """
+
+    state = ''
+    while state == '':
+        try:
+            state = str(input("\tEnter state you would like "
+                              "to search for: "))
+            state = string.capwords(state)
+            if state not in state_dict:
+                raise KeyError
+        except KeyError:
+            print("###Please verify state input.###")
+            state = ''
+        else:
+            return state
+
+
+# prints user input state information
+def search_states():
+    """
+    function to search states for user supplied state,
+    then display state data
+    :param: state, state_info, url_pic, response, img
+    :except: if error occurs, retry
+    :return: None
+    """
+    state = ''
+    while state == '':
+        try:
+            # runs get_state function
+            state = get_state()
+            if state in sorted(state_dict):
+                print('*' * 80)
+                # displays state selected from user with info and pic
+                print(f'State Chosen: {state}'
+                      f'\n\t-Capital: {state_dict[state]["Capital"]}'
+                      f'\n\t-Population: {state_dict[state]["Population"]}'
+                      f'\n\t-Flower: {state_dict[state]["Flower"]}')
+                print("\t###NOTE: Please see open window for a picture of "
+                      "state flower.###")
+                url_pic = state_dict[state]["URL"]
+                response = requests.get(url_pic, stream=True)
+                img = Image.open(response.raw)
+                img.show()
+        except TypeError:
+            print("Error: Please retry program.")
+
+
+# function that finds the 5 highest populations, the graphs
+def population_graph():
+    """
+    function to display a graph of top populated states
+    :param: state_pop, num_pass, top_state, state_population,
+    states_data, all_states_population, state_names, state_pop
+    :except: TypeError
+    :return: None
+    """
+    num_pass = 0
+    try:
+        top_state = []
+        state_population = []
+        states_data = []
+        for state in state_dict:
+            states_data.append({"State": state,
+                                "Population":
+                                    state_dict[state]["Population"]})
+        # Sort based on Population descending
+        all_states_pop = sorted(
+            states_data, key=lambda i: i["Population"], reverse=True)
+        print("")
+        print("*" * 60)
+        print("\tTop 5 State Populations:")
+        # prints the values in a graph and displays them
+        for top_5 in all_states_pop[:5]:
+            state_names = [top_5["State"]]
+            states_pop = [top_5["Population"]]
+            plt.xlabel('State')
+            plt.ylabel('Population(in tens-of-millions)')
+            plt.title('Top 5 State Populations')
+            plt.plot(figsize=(20, 20))
+            plt.bar(state_names, states_pop)
+            num_pass += 1
+            print("\t\t", num_pass, ":", top_5["State"],
+                  top_5["Population"])
+            top_state.append(top_5["State"])
+            state_population.append(top_5["Population"])
+        print("*" * 60)
+        print("")
+        state_pop = 'END_INFINITE_LOOP'
+        plt.show()
+        if state_pop in sorted(datafile_to_dict['STATE']):
+            print(state_pop, state_dict[state_pop]["Population"])
+    except TypeError:
+        print("Program error.")
+
+
+# function that updates user specified state population
+def update_population():
+    """
+    function to update the population of a state
+    :param: state
+    :except: KeyError
+    :return: None
+    """
+    new_pop = ''
+    while new_pop == '':
+        try:
+            # runs get_state function
+            state = get_state()
+            if state in sorted(state_dict):
+                print('*' * 80)
+                # displays state selected from user with info and pic
+                print("\t# State Chosen: ", state)
+                print("\t# Population: ", state_dict[state]["Population"])
+                new_pop = state_dict[state]["Population"] = \
+                    int(input("Please enter the new population value: "))
+                new_pop = str(new_pop)
+        except ValueError:
+            print("Please verify new population entered.")
+            new_pop = ''
+        else:
+            print("\t# State Chosen: ", state)
+            print("\t# New Population: "
+                  "", new_pop)
+
+
+# runs main program
+if __name__ == "__main__":
+    main()

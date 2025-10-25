@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    	<!--- calls css file and sets title--->
+	<link rel="stylesheet" href="/static/lab8_format.css">
+    <title>Update Password</title>
+</head>
+<body>
+    <h1 style="text-align:center">Update Password</h1><br>
+      <form method="Post">
+        <label>Username:</label>
+          <input type="text" placeholder="Username" name="user_name" id="user_name"><br>
+        <label>New Password:</label>
+          <input type="password" placeholder="Password" name="password" id="password"><br>
+        <label>Re-enter Password:</label>
+          <input type="password" placeholder="Password" name="repass" id="repass"><br>
+        <input type="submit" value="Submit">
+        <button onclick="window.history.go(-1); return false">Cancel</button>
+      </form>
+        {% if error_msg is defined and error_msg != None %}
+            <span style="color:red;font-size:10pt;">{{ error_msg }}</span>
+        {% endif %}
+      {% extends "layout.html" %}
+</body>
+</html>
